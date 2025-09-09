@@ -1,0 +1,7 @@
+pip install fastapi -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple some-package
+pip install pydantic -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple some-package
+pip install logfire -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple some-package
+pip install starlette -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple some-package  
+pip install uvicorn -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple some-package 
+pip install exifread -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple some-package 
+pip install sqlalchemy -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple some-package 
