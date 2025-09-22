@@ -11,6 +11,14 @@ async def get_user_by_email(db: AsyncSession, email: str):
     result = await db.execute(select(User).where(User.email == email))
     return result.scalars().first()
 
+async def get_user_by_username(db: AsyncSession, username: str):
+    result = await db.execute(select(User).where(User.username == username))
+    return result.scalars().first()
+
+async def get_user_by_phone(db: AsyncSession, username: str):
+    result = await db.execute(select(User).where(User.username == username))
+    return result.scalars().first()
+
 async def create_user(db: AsyncSession, user: UserCreate):
     db_user = User(name=user.name, email=user.email)
     db.add(db_user)
