@@ -21,7 +21,6 @@ CREATE TABLE users (
     -- 注册时间
     updated_at TIMESTAMP DEFAULT NOW() -- 最后更新时间
 );
-
 CREATE TABLE file_directory (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -33,7 +32,6 @@ CREATE TABLE file_directory (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE CASCADE
 );
-
 CREATE TABLE directory_closure (
     ancestor_id INT NOT NULL,
     descendant_id INT NOT NULL,
@@ -62,7 +60,6 @@ CREATE TABLE files (
     updated_at TIMESTAMP DEFAULT NOW(),
     CONSTRAINT fk_owner FOREIGN KEY(owner_id) REFERENCES users(id)
 );
-
 -- 照片表（扩展元数据）
 CREATE TABLE photos (
     id BIGSERIAL PRIMARY KEY,
@@ -95,7 +92,6 @@ CREATE TABLE photos (
     updated_at TIMESTAMP DEFAULT NOW(),
     CONSTRAINT fk_file FOREIGN KEY(file_id) REFERENCES files(id) ON DELETE CASCADE
 );
-
 -- Live Photo 表：把 "静态图" 和 "视频" 关联起来
 CREATE TABLE live_photos (
     id BIGSERIAL PRIMARY KEY,
@@ -110,46 +106,65 @@ CREATE TABLE live_photos (
     CONSTRAINT fk_photo FOREIGN KEY(photo_id) REFERENCES photos(id) ON DELETE CASCADE,
     CONSTRAINT fk_video FOREIGN KEY(video_file_id) REFERENCES files(id) ON DELETE CASCADE
 );
-
 CREATE TABLE videos (
     id BIGSERIAL PRIMARY KEY,
-    file_id BIGINT NOT NULL UNIQUE,     -- 对应文件表 (files.id)
-    format VARCHAR(20),                 -- 格式 (mp4, mov, mkv, avi 等)
-    width INT,                          -- 分辨率 - 宽
-    height INT,                         -- 分辨率 - 高
-    duration_seconds DECIMAL(10,2),     -- 时长（秒）
-    bitrate BIGINT,                     -- 比特率（bps）
-    codec_video VARCHAR(50),            -- 视频编码 (h264, hevc, vp9, av1 等)
-    codec_audio VARCHAR(50),            -- 音频编码 (aac, mp3, opus 等)
-    frame_rate DECIMAL(5,2),            -- 帧率 (fps)
-    rotation SMALLINT,                  -- 旋转角度 (0,90,180,270)
+    file_id BIGINT NOT NULL UNIQUE,
+    -- 对应文件表 (files.id)
+    format VARCHAR(20),
+    -- 格式 (mp4, mov, mkv, avi 等)
+    width INT,
+    -- 分辨率 - 宽
+    height INT,
+    -- 分辨率 - 高
+    duration_seconds DECIMAL(10, 2),
+    -- 时长（秒）
+    bitrate BIGINT,
+    -- 比特率（bps）
+    codec_video VARCHAR(50),
+    -- 视频编码 (h264, hevc, vp9, av1 等)
+    codec_audio VARCHAR(50),
+    -- 音频编码 (aac, mp3, opus 等)
+    frame_rate DECIMAL(5, 2),
+    -- 帧率 (fps)
+    rotation SMALLINT,
+    -- 旋转角度 (0,90,180,270)
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
     CONSTRAINT fk_file FOREIGN KEY(file_id) REFERENCES files(id) ON DELETE CASCADE
 );
-
 -- 音乐表（音频文件的元数据）
 CREATE TABLE audios (
     id BIGSERIAL PRIMARY KEY,
-    file_id BIGINT NOT NULL UNIQUE,     -- 对应 files.id
-    lyrics_file_id BIGINT,                 -- 歌词文件
-    format VARCHAR(20),                 -- 格式 (mp3, flac, wav, aac, ogg, m4a 等)
-    duration_seconds DECIMAL(10,2),     -- 时长（秒）
-    bitrate BIGINT,                     -- 比特率 (bps)
-    sample_rate INT,                    -- 采样率 (Hz)
-    channels SMALLINT,                  -- 声道数 (1=单声道, 2=立体声, 5=5.1 等)
-
+    file_id BIGINT NOT NULL UNIQUE,
+    -- 对应 files.id
+    lyrics_file_id BIGINT,
+    -- 歌词文件
+    format VARCHAR(20),
+    -- 格式 (mp3, flac, wav, aac, ogg, m4a 等)
+    duration_seconds DECIMAL(10, 2),
+    -- 时长（秒）
+    bitrate BIGINT,
+    -- 比特率 (bps)
+    sample_rate INT,
+    -- 采样率 (Hz)
+    channels SMALLINT,
+    -- 声道数 (1=单声道, 2=立体声, 5=5.1 等)
     -- 音乐标签（ID3/FLAC/APE 标签解析）
-    title VARCHAR(255),                 -- 歌曲标题
-    artist VARCHAR(255),                -- 艺术家
-    album VARCHAR(255),                 -- 专辑
-    genre VARCHAR(100),                 -- 流派
-    track_number INT,                   -- 专辑中的曲目号
-    release_year INT,                   -- 发行年份
-
+    title VARCHAR(255),
+    -- 歌曲标题
+    artist VARCHAR(255),
+    -- 艺术家
+    album VARCHAR(255),
+    -- 专辑
+    genre VARCHAR(100),
+    -- 流派
+    track_number INT,
+    -- 专辑中的曲目号
+    release_year INT,
+    -- 发行年份
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
-
     CONSTRAINT fk_file FOREIGN KEY(file_id) REFERENCES files(id) ON DELETE CASCADE,
-    CONSTRAINT fk_lyrics_file FOREIGN KEY(lyrics_file_id) REFERENCES files(id) ON DELETE SET NULL
+    CONSTRAINT fk_lyrics_file FOREIGN KEY(lyrics_file_id) REFERENCES files(id) ON DELETE
+    SET NULL
 );

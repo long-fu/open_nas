@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from app import crud
+from app.crud import user as crud
 from app.schemas.user import UserCreate
 
 class UserService:

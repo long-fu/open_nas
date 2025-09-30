@@ -18,10 +18,5 @@ class UserCreate(BaseModel):
     age: int = 18
     status: str = "正常"
     
-class UserOut(BaseModel):
-    id: int
-    name: str
-    email: EmailStr
 
-    class Config:
-        orm_mode = True
+

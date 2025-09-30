@@ -1,12 +1,14 @@
 from sqlalchemy import Column, Integer, String
 from app.database import Base
-import enum
 from sqlalchemy import TIMESTAMP, text
 from sqlalchemy import Enum
 import datetime
 from sqlalchemy.types import TypeDecorator, Integer
+from sqlalchemy import Column, Date
 
 # 数据库存储映射
+
+
 class GenderType(TypeDecorator):
     impl = Integer
     GENDER_MAP = {0: "男", 1: "女", 2: "未知"}
@@ -23,6 +25,8 @@ class GenderType(TypeDecorator):
         return self.GENDER_MAP[value]
 
 # 数据库存储映射
+
+
 class StatusType(TypeDecorator):
     impl = Integer
 
@@ -41,6 +45,7 @@ class StatusType(TypeDecorator):
             return "正常"
         return self.STATUS_MAP[value]
 
+
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
@@ -50,9 +55,10 @@ class User(Base):
     phone = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
     gender = Column(GenderType(), nullable=False)
-    age = Column(Integer, nullable=True,default=18)
+    birthdate = Column(Date, nullable=True)
     status = Column(StatusType(), nullable=False)
-    created_at = Column(TIMESTAMP, server_default=text("CURRENT_TIMESTAMP"),nullable=False)
+    created_at = Column(TIMESTAMP, server_default=text(
+        "CURRENT_TIMESTAMP"), nullable=False)
     updated_at = Column(
         TIMESTAMP,
         server_default=text("CURRENT_TIMESTAMP"),

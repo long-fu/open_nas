@@ -3,29 +3,45 @@ from sqlalchemy.future import select
 from app.models.user import User
 from app.schemas.user import UserCreate
 
-async def get_user(db: AsyncSession, user_id: int):
+
+async def get_user(db: AsyncSession, user_id: int) -> User | None:
     result = await db.execute(select(User).where(User.id == user_id))
     return result.scalars().first()
 
-async def get_user_by_email(db: AsyncSession, email: str):
+
+async def get_user_by_email(db: AsyncSession, email: str) -> User | None:
     result = await db.execute(select(User).where(User.email == email))
     return result.scalars().first()
 
-async def get_user_by_username(db: AsyncSession, username: str):
+
+async def get_user_by_username(db: AsyncSession, username: str) -> User | None:
     result = await db.execute(select(User).where(User.username == username))
     return result.scalars().first()
 
-async def get_user_by_phone(db: AsyncSession, username: str):
+
+async def get_user_by_phone(db: AsyncSession, username: str) -> User | None:
     result = await db.execute(select(User).where(User.username == username))
     return result.scalars().first()
 
-async def create_user(db: AsyncSession, user: UserCreate):
-    db_user = User(name=user.name, email=user.email)
+
+async def create_user(db: AsyncSession, user_data: dict) -> User:
+    from app.services.auth import hash_password
+    db_user = User(
+        username=user_data["username"],
+        email=user_data["email"],
+        phone=user_data["phone"],
+        password=hash_password(user_data["password"],
+                               gender=user_data['gender'],
+                               birthdate=user_data['birthdate'],
+                               status="正常"
+                               )
+    )
     db.add(db_user)
     await db.commit()
     await db.refresh(db_user)
     return db_user
 
-async def get_users(db: AsyncSession, skip: int = 0, limit: int = 10):
+
+async def get_users(db: AsyncSession, skip: int = 0, limit: int = 10) -> list[User]:
     result = await db.execute(select(User).offset(skip).limit(limit))
     return result.scalars().all()
