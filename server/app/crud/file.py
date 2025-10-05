@@ -19,7 +19,7 @@ async def create_directory(db: AsyncSession, owner_id: int, name: str, parent_id
     return new
 
 # 创建文件元记录（不含上传）
-async def create_file_record(db: AsyncSession, owner_id: int, name: str, parent_id: int, storage_url: str, size: int, mime_type: str, hash:str):
+async def create_file_record(db: AsyncSession, owner_id: int, name: str, parent_id: int | None, storage_url: str, size: int, mime_type: str, hash:str):
     new = File(owner_id=owner_id, parent_id=parent_id, name=name, is_directory=False,
                storage_url=storage_url, size=size, mime_type=mime_type, hash=hash)
     db.add(new)
@@ -154,7 +154,7 @@ async def move_node(db: AsyncSession, node_id: int, new_parent_id: int):
 # 上传文件 endpoint helper
 
 
-async def upload_file(db: AsyncSession, owner_id: int, parent_id: int, upload_file: MinioFile):
+async def upload_file(db: AsyncSession, owner_id: int, parent_id: int | None, upload_file: MinioFile):
     
     rec = await create_file_record(db, owner_id, upload_file.file_name, parent_id, upload_file.url, upload_file.size, upload_file.content_type,upload_file.hash)
     

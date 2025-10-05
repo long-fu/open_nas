@@ -9,6 +9,10 @@ from io import BytesIO
 from minio.error import S3Error
 from fastapi import HTTPException
 from app.models.file import MinioFile
+import piexif
+import json
+from io import BytesIO
+
 
 client = Minio(
     "localhost:9000",  # MinIO 服务地址
@@ -31,7 +35,7 @@ def calc_md5_bytes(data: bytes) -> str:
 # 存储文件到本地 storage，返回相对路径
 def save_upload_picture(uid: str,upload_file: UploadFile):
     # try:
-    file_data = upload_file.read()
+    file_data = BytesIO(upload_file.read())
     # file_name = upload_file.filename
     file_name:str = os.path.basename(upload_file.filename).decode("utf-8")   # hello.jpg
     if(len(file_name) <= 0):
@@ -64,6 +68,45 @@ def save_upload_picture(uid: str,upload_file: UploadFile):
     minio_file = MinioFile(url=file_url,bucket_name=bucket_name,object_name=object_name,size=file_size, content_type=content_type, hash=hash)
     return minio_file
 
+
+def exif_to_dict(exif_dict):
+    """将 piexif 读取的 EXIF 转成可序列化字典"""
+    result = {}
+
+    # 0th IFD (主信息)
+    if "0th" in exif_dict:
+        result["0th"] = {piexif.TAGS["0th"][k]["name"]: str(v) for k, v in exif_dict["0th"].items()}
+
+    # Exif IFD (拍摄信息)
+    if "Exif" in exif_dict:
+        result["Exif"] = {piexif.TAGS["Exif"][k]["name"]: str(v) for k, v in exif_dict["Exif"].items()}
+
+    # GPS IFD
+    if "GPS" in exif_dict:
+        gps_info = {}
+        for k, v in exif_dict["GPS"].items():
+            tag_name = piexif.TAGS["GPS"][k]["name"]
+            gps_info[tag_name] = str(v)
+        result["GPS"] = gps_info
+
+    # 其他IFD
+    if "1st" in exif_dict:
+        result["1st"] = {piexif.TAGS["1st"][k]["name"]: str(v) for k, v in exif_dict["1st"].items()}
+
+    return result
+
+
+def read_image_file_exif(filename):
+    exif_dict = piexif.load(filename)
+    data_dict = exif_to_dict(exif_dict)
+    return json.dumps(data_dict, ensure_ascii=False, indent=2)
+
+
+def read_image_data_exif(image_bytes):
+    exif_dict = piexif.load(image_bytes)
+    data_dict = exif_to_dict(exif_dict)
+    return json.dumps(data_dict, ensure_ascii=False, indent=2)
+
 class FileService:
     
     def __init__(self, db: AsyncSession):
@@ -73,10 +116,17 @@ class FileService:
         return await crud.create_directory(self.db, owner_id, name, parent_id)
     
     async def upload_file(self, owner_id: str, upload_file: UploadFile):
+        
+        # 可以解析出存储路径
         # 解析出数据
         file_data = save_upload_picture(owner_id, upload_file)
+        file_info = read_image_data_exif(BytesIO(upload_file.file.read()))
+        print(file_info)
         # 查询 文件id
-        return await crud.upload_file(self.db, owner_id, file_data)
+        parent_id = None
+        
+        
+        return await crud.upload_file(self.db, owner_id, parent_id ,file_data)
 
     async def list_children(self, owner_id: str, dir_id: int):
         return await crud.list_children(self.db, owner_id, dir_id)

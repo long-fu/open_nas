@@ -14,3 +14,6 @@ pip install bcrypt -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple some-
 pip install argon2_cffi -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple some-package
 pip install python-multipart -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple some-package
 pip install minio -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple some-package
+pip install exifread -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple some-package
+pip install hachoir -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple some-package
+pip install piexif -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple some-package
