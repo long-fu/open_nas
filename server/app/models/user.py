@@ -2,7 +2,6 @@ from sqlalchemy import Column, Integer, String
 from app.database import Base
 from sqlalchemy import TIMESTAMP, text
 from sqlalchemy import Enum
-import datetime
 from sqlalchemy.types import TypeDecorator, Integer
 from sqlalchemy import Column, Date
 
@@ -25,8 +24,6 @@ class GenderType(TypeDecorator):
         return self.GENDER_MAP[value]
 
 # 数据库存储映射
-
-
 class StatusType(TypeDecorator):
     impl = Integer
 
@@ -50,7 +47,7 @@ class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     uid = Column(String, unique=True, nullable=False)
-    name = Column(String, index=True, nullable=False)
+    username = Column(String, index=True, nullable=False)
     email = Column(String, unique=True, nullable=False)
     phone = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)

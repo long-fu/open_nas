@@ -1,13 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from app.models.user import User
-from app.schemas.user import UserCreate
-
-
-async def get_user(db: AsyncSession, user_id: int) -> User | None:
-    result = await db.execute(select(User).where(User.id == user_id))
-    return result.scalars().first()
-
+import secrets
 
 async def get_user_by_email(db: AsyncSession, email: str) -> User | None:
     result = await db.execute(select(User).where(User.email == email))
@@ -26,15 +20,16 @@ async def get_user_by_phone(db: AsyncSession, username: str) -> User | None:
 
 async def create_user(db: AsyncSession, user_data: dict) -> User:
     from app.services.auth import hash_password
+    uid = secrets.token_hex(16)
     db_user = User(
+        uid=uid,
         username=user_data["username"],
         email=user_data["email"],
         phone=user_data["phone"],
-        password=hash_password(user_data["password"],
-                               gender=user_data['gender'],
-                               birthdate=user_data['birthdate'],
-                               status="正常"
-                               )
+        password=hash_password(user_data["password"]),
+        gender=user_data['gender'],
+        birthdate=user_data['birthdate'],
+        status="正常"
     )
     db.add(db_user)
     await db.commit()

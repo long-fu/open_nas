@@ -10,3 +10,5 @@ pip install passlib -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple some
 pip install python-jose -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple some-package
 pip install "pydantic[email]" -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple some-package
 pip install asyncpg -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple some-package
+pip install bcrypt -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple some-package
+pip install argon2_cffi -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple some-package

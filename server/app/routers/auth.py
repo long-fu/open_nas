@@ -8,6 +8,7 @@ router = APIRouter()
 
 @router.post("/register", response_model=TokenOut)
 async def register(user: UserCreate, db: AsyncSession = Depends(get_db)):
+    print('注册用户信息', user)
     service = AuthService(db)
     return await service.register(user.model_dump())
 
