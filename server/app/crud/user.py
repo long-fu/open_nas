@@ -13,6 +13,10 @@ async def get_user_by_username(db: AsyncSession, username: str) -> User | None:
     return result.scalars().first()
 
 
+async def get_user_by_uid(db: AsyncSession, uid: str) -> User | None:
+    result = await db.execute(select(User).where(User.uid == uid))
+    return result.scalars().first()
+
 async def get_user_by_phone(db: AsyncSession, username: str) -> User | None:
     result = await db.execute(select(User).where(User.username == username))
     return result.scalars().first()

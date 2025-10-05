@@ -6,8 +6,6 @@ from sqlalchemy.types import TypeDecorator, Integer
 from sqlalchemy import Column, Date
 
 # 数据库存储映射
-
-
 class GenderType(TypeDecorator):
     impl = Integer
     GENDER_MAP = {0: "男", 1: "女", 2: "未知"}

@@ -2,10 +2,6 @@ from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.crud import user as crud
 
-# from app.schemas.user import UserCreate
-# from app.schemas.user import UserInfo
-# from app.models.user import User
-
 class UserService:
     def __init__(self, db: AsyncSession):
         self.db = db
@@ -16,8 +12,8 @@ class UserService:
     #         raise HTTPException(status_code=400, detail="Email already registered")
     #     return await crud.create_user(self.db, user)
 
-    async def get_user(self, username: str):
-        user = await crud.get_user_by_username(self.db, username)
+    async def get_user(self, uid: str):
+        user = await crud.get_user_by_uid(self.db, uid)
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
         # info = UserInfo(
