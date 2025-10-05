@@ -43,7 +43,7 @@ class AuthService:
 
     async def login(self, username: str, password: str) -> TokenOut:
         user = await crud.get_user_by_username(self.db, username)
-        if not user or not verify_password(password, user.password_hash):
+        if not user or not verify_password(password, user.password):
             raise HTTPException(status_code=401, detail="Invalid credentials")
         token = create_access_token({"sub": user.username})
         return TokenOut(access_token=token, token_type='bearer')
