@@ -48,12 +48,12 @@ class AuthService:
         if existing_user:
             raise HTTPException(status_code=400, detail="Username already exists")
         user = await crud.create_user(self.db, user_data)
-        token = create_access_token({"sub": user.username})
+        token = create_access_token({"sub": user.uid})
         return TokenOut(access_token=token, token_type='bearer')
 
     async def login(self, username: str, password: str) -> TokenOut:
         user = await crud.get_user_by_username(self.db, username)
         if not user or not verify_password(password, user.password):
             raise HTTPException(status_code=401, detail="Invalid credentials")
-        token = create_access_token({"sub": user.username})
+        token = create_access_token({"sub": user.uid})
         return TokenOut(access_token=token, token_type='bearer')
