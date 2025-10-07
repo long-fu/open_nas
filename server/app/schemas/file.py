@@ -1,20 +1,30 @@
-# from pydantic import BaseModel
-# from typing import Optional
-# from datetime import datetime
+from pydantic import BaseModel
+from typing import Optional, List
+from datetime import datetime
 
-# class FileCreate(BaseModel):
-#     name: str
-#     parent_id: Optional[int]
-#     is_directory: bool = False
+class FileBase(BaseModel):
+    name: str
+    parent_id: Optional[int] = None
+    # type: Optional[str] = None
+    content_type: Optional[str] = None
+    size: Optional[int] = 0
+    hash: Optional[str] = None
+    storage_url: Optional[str] = None
 
-# class FileOut(BaseModel):
-#     id: int
-#     name: str
-#     parent_id: Optional[int]
-#     owner_id: int
-#     storage_url: str
-#     size: int
-#     hash: str
-#     created_at: Optional[datetime]
-#     class Config:
-#         orm_mode = True
+class FileCreate(FileBase):
+    pass
+
+class FileRead(FileBase):
+    id: int
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        orm_mode = True
+
+class DirectoryTree(BaseModel):
+    id: int
+    name: str
+    children: List["DirectoryTree"] = []
+    class Config:
+        orm_mode = True

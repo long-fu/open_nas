@@ -1,10 +1,11 @@
 from sqlalchemy import Column, Integer, String
-from app.database import Base
 from sqlalchemy import TIMESTAMP, text
 from sqlalchemy import Enum
 from sqlalchemy.types import TypeDecorator, Integer
 from sqlalchemy import Column, Date
-
+from sqlalchemy.orm import relationship
+from app.database import Base
+from app.models.file import DFile
 # 数据库存储映射
 class GenderType(TypeDecorator):
     impl = Integer
@@ -60,3 +61,4 @@ class User(Base):
         server_onupdate=text("CURRENT_TIMESTAMP"),
         nullable=False
     )
+    files = relationship("DFile", back_populates="owner")

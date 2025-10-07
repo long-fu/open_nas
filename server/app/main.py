@@ -6,7 +6,7 @@ from app.routers import file
 app = FastAPI(title="FastAPI Async Auth MVC")
 app.include_router(auth.router)
 app.include_router(user.router)
-# app.include_router(file.router)
+app.include_router(file.router)
 # 异步创建表
 async def init_models():
     async with engine.begin() as conn:
