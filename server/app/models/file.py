@@ -3,9 +3,9 @@ from sqlalchemy.orm import relationship
 from app.database import Base
 from sqlalchemy.types import TypeDecorator, Integer
 from sqlalchemy.sql import func
-
+from pydantic import BaseModel
 # 临时存储
-class MinioFile:
+class MinioFile(BaseModel):
     url:str = ''
     file_name: str = ''
     bucket_name: str = ''

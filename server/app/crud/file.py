@@ -11,8 +11,8 @@ async def create_file(db: AsyncSession, file_in: FileCreate, owner_id: str):
     file = DFile(**file_in.model_dump(), owner_id=owner_id)
     db.add(file)
     await db.flush()  # 让 SQLAlchemy 获取 file.id
-    print("111111111111111111111")
-    print(file.id)
+    # print("111111111111111111111")
+    # print(file.id)
     # 插入自己到 closure 表 (自反路径)
     db.add(DirectoryClosure(ancestor_id=file.id, descendant_id=file.id, depth=0))
 
@@ -30,7 +30,7 @@ async def create_file(db: AsyncSession, file_in: FileCreate, owner_id: str):
 
     await db.commit()
     await db.refresh(file)
-    print(file.id)
+    # print(file.id)
     return file
 
 

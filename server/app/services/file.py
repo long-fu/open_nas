@@ -15,6 +15,8 @@ from io import BytesIO
 from datetime import datetime
 from app.schemas.file import FileCreate
 from app.models.file import DFile
+from typing import List
+
 client = Minio(
     "localhost:9000",  # MinIO 服务地址
     access_key="haoshuai",
@@ -86,10 +88,10 @@ def save_upload_picture(uid: str, datetime: datetime, upload_file: UploadFile):
         content_type=upload_file.content_type,
     )
 
-    upload_file.close()
+    # upload_file.close()
 
     file_url = f"http://localhost:9000/{bucket_name}/{object_name}"
-    minio_file = MinioFile(url=file_url, bucket_name=bucket_name, object_name=object_name,
+    minio_file = MinioFile(url=file_url, bucket_name=bucket_name, object_name=object_name,file_name=file_name,
                            size=file_size, content_type=content_type, file_hash=file_hash)
     return minio_file
 
@@ -157,16 +159,11 @@ def read_image_exif_from_bytes(image_bytes: bytes):
     data_dict = exif_to_dict(exif_dict)
     return data_dict
 
-# from app.models.file import File as MFile
-
 
 class FileService:
 
     def __init__(self, db: AsyncSession):
         self.db = db
-
-    async def create_directory(self, owner_id: str, name: str, parent_id: int = None):
-        return await crud.create_directory(self.db, owner_id, name, parent_id)
 
     async def upload_file(self, owner_id: str, upload_file: UploadFile):
 
@@ -191,17 +188,32 @@ class FileService:
 
         # 这里上传没有指定路径
         file_data = save_upload_picture(owner_id, dt_obj, upload_file)
-        tFile = FileCreate(name=dt_obj.day, parent_id=sub.id, size=file_data.size,
-                           hash=file_data.hash, storage_url=file_data.url, content_type=file_data.content_type)
+        tFile = FileCreate(name=file_data.file_name, 
+                           parent_id=sub.id, 
+                           size=file_data.size,
+                           hash=file_data.file_hash, 
+                           storage_url=file_data.url, 
+                           content_type=file_data.content_type)
+        print(tFile)
         sub: DFile = await crud.create_file(db=self.db, file_in=tFile, owner_id=owner_id)
 
         return sub
 
-    async def list_children(self, owner_id: str, dir_id: int):
-        return await crud.list_children(self.db, owner_id, dir_id)
+    async def get_user_files(self, owner_id: str) -> List[DFile]:
+        list = await crud.get_user_files(self.db, owner_id)
+        return list
 
-    async def get_path(self, file_id: int):
-        return await crud.get_full_path(self.db, file_id)
+    async def get_children(self, parent_id: int):
+        return await crud.get_children(self.db, parent_id)
 
-    async def move(self, node_id: int, new_parent_id: int):
-        return await crud.move_node(self.db, node_id, new_parent_id)
+    async def delete_file(self, file_id: int):
+        return await crud.delete_file(self.db, file_id)
+
+    # async def list_children(self, owner_id: str, dir_id: int):
+    #     return await crud.list_children(self.db, owner_id, dir_id)
+
+    # async def get_path(self, file_id: int):
+    #     return await crud.get_full_path(self.db, file_id)
+
+    # async def move(self, node_id: int, new_parent_id: int):
+    #     return await crud.move_node(self.db, node_id, new_parent_id)
