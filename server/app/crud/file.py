@@ -1,15 +1,12 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.models.file import File, DirectoryClosure, MinioFile
-from app.services.file import save_upload_file
 from sqlalchemy import select, insert, delete, and_
-import os
-from fastapi import UploadFile
 
 # 创建目录（在 files 表中 is_directory = True），并维护闭包表
 
 
-async def create_directory(db: AsyncSession, owner_id: int, name: str, parent_id: int = None):
+async def create_directory(db: AsyncSession, owner_id: str, name: str, parent_id: int = None) -> File:
     new = File(owner_id=owner_id, parent_id=parent_id,
                name=name, is_directory=True, storage_path="")
     db.add(new)
@@ -19,7 +16,7 @@ async def create_directory(db: AsyncSession, owner_id: int, name: str, parent_id
     return new
 
 # 创建文件元记录（不含上传）
-async def create_file_record(db: AsyncSession, owner_id: int, name: str, parent_id: int | None, storage_url: str, size: int, mime_type: str, hash:str):
+async def create_file_record(db: AsyncSession, owner_id: str, name: str, parent_id: int | None, storage_url: str, size: int, mime_type: str, hash:str):
     new = File(owner_id=owner_id, parent_id=parent_id, name=name, is_directory=False,
                storage_url=storage_url, size=size, mime_type=mime_type, hash=hash)
     db.add(new)
@@ -30,7 +27,7 @@ async def create_file_record(db: AsyncSession, owner_id: int, name: str, parent_
 
 
 # list directory children
-async def list_children(db: AsyncSession, owner_id: int, dir_id: int):
+async def list_children(db: AsyncSession, owner_id: str, dir_id: int):
     q = select(File).where(File.parent_id == dir_id, File.owner_id == owner_id)
     res = await db.execute(q)
     return res.scalars().all()

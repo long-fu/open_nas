@@ -38,7 +38,7 @@ class File(Base):
     id = Column(BigInteger, primary_key=True, index=True)
     
     # 文件/目录所属用户
-    owner_id = Column(BigInteger, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    owner_id = Column(String(256), ForeignKey("users.uid", ondelete="CASCADE"), nullable=False)
     
     # 父目录ID（自关联 files.id）
     parent_id = Column(BigInteger, ForeignKey("files.id", ondelete="CASCADE"), nullable=True)
