@@ -91,7 +91,7 @@ def save_upload_picture(uid: str, datetime: datetime, upload_file: UploadFile):
     # upload_file.close()
 
     file_url = f"http://localhost:9000/{bucket_name}/{object_name}"
-    minio_file = MinioFile(url=file_url, bucket_name=bucket_name, object_name=object_name,file_name=file_name,
+    minio_file = MinioFile(url=file_url, bucket_name=bucket_name, object_name=object_name, file_name=file_name,
                            size=file_size, content_type=content_type, file_hash=file_hash)
     return minio_file
 
@@ -188,13 +188,13 @@ class FileService:
 
         # 这里上传没有指定路径
         file_data = save_upload_picture(owner_id, dt_obj, upload_file)
-        tFile = FileCreate(name=file_data.file_name, 
-                           parent_id=sub.id, 
+        tFile = FileCreate(name=file_data.file_name,
+                           parent_id=sub.id,
                            size=file_data.size,
-                           hash=file_data.file_hash, 
-                           storage_url=file_data.url, 
+                           hash=file_data.file_hash,
+                           storage_url=file_data.url,
                            content_type=file_data.content_type)
-        print(tFile)
+        # print(tFile)
         sub: DFile = await crud.create_file(db=self.db, file_in=tFile, owner_id=owner_id)
 
         return sub
@@ -209,6 +209,11 @@ class FileService:
     async def delete_file(self, file_id: int):
         return await crud.delete_file(self.db, file_id)
 
+    async def get_all_descendants(self, dir_id: int):
+        return await crud.get_all_descendants(self.db, dir_id)
+
+    async def get_directory_tree(self, dir_id: int | None = None):
+        return await crud.get_directory_tree(self.db, dir_id)
     # async def list_children(self, owner_id: str, dir_id: int):
     #     return await crud.list_children(self.db, owner_id, dir_id)
 

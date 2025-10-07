@@ -28,3 +28,10 @@ class DirectoryTree(BaseModel):
     children: List["DirectoryTree"] = []
     class Config:
         orm_mode = True
+
+class FileTree(FileBase):
+    id: int
+    name: str
+    children: List["FileTree"] = []
+    class Config:
+        orm_mode = True

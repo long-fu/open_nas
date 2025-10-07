@@ -55,3 +55,41 @@ async def delete_file(db: AsyncSession, file_id: int):
     descendants = [r[0] for r in result.all()]
     await db.execute(delete(DFile).where(DFile.id.in_(descendants)))
     await db.commit()
+
+# 获取某个目录下的所有子文件（递归）
+async def get_all_descendants(db: AsyncSession, dir_id: int):
+    """
+    返回指定目录下的所有文件（包括子目录递归层级）
+    """
+    result = await db.execute(
+        select(DFile)
+        .join(DirectoryClosure, DirectoryClosure.descendant_id == DFile.id)
+        .where(DirectoryClosure.ancestor_id == dir_id, DirectoryClosure.depth > 0)
+    )
+    return result.scalars().all()
+
+async def get_directory_tree(db: AsyncSession, dir_id: int | None = None):
+    """
+    从指定目录（或根目录）开始递归获取文件树
+    """
+    if dir_id is None:
+        query = select(DFile).where(DFile.parent_id.is_(None))  # 根目录
+    else:
+        query = select(DFile).where(DFile.parent_id == dir_id)  # 指定目录
+    result = await db.execute(query)
+    children = result.scalars().all()
+    tree = []
+    for child in children:
+        node = {
+            "id": child.id,
+            "name": child.name,
+            "content_type": child.content_type,
+            "size": child.size,
+            "hash": child.hash,
+            "storage_url": child.storage_url,
+            "children": []
+        }
+        if child.size == 0:  # 目录
+            node["children"] = await get_directory_tree(db, child.id)
+        tree.append(node)
+    return tree
