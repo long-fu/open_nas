@@ -1,7 +1,7 @@
 from passlib.context import CryptContext
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from app.crud import user as crud
 from app.schemas.user import TokenOut
 from jose import JWTError, jwt
@@ -28,7 +28,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 def create_access_token(data: dict):
     to_encode = data.copy()
-    expire = datetime.now(datetime.timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
@@ -52,6 +52,7 @@ class AuthService:
         return TokenOut(access_token=token, token_type='bearer')
 
     async def login(self, username: str, password: str) -> TokenOut:
+        print("login: ", username)
         user = await crud.get_user_by_username(self.db, username)
         if not user or not verify_password(password, user.password):
             raise HTTPException(status_code=401, detail="Invalid credentials")

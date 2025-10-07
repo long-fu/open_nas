@@ -70,29 +70,32 @@ import time
 from datetime import datetime
 
 
+from datetime import datetime, timedelta, timezone
+ACCESS_TOKEN_EXPIRE_MINUTES = 60
+expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+print(expire)
+# if __name__ == "__main__":
+#     # 例子：读取文件为 bytes
+#     with open("/home/haoshuai/code/open_nas/test_hello/test.jpeg", "rb") as f:
+#         img_bytes = f.read()
 
-if __name__ == "__main__":
-    # 例子：读取文件为 bytes
-    with open("/home/haoshuai/code/open_nas/test_hello/test.jpeg", "rb") as f:
-        img_bytes = f.read()
-
-    exif_json = read_image_exif_from_bytes(img_bytes)
-    # print(exif_json)
-    # print(type(exif_json["Exif"]["DateTimeOriginal"]))
-    # decode('utf-8')
+#     exif_json = read_image_exif_from_bytes(img_bytes)
+#     # print(exif_json)
+#     # print(type(exif_json["Exif"]["DateTimeOriginal"]))
+#     # decode('utf-8')
     
-    # print(exif_json["Exif"]["DateTimeOriginal"])
-    time_str = exif_json["Exif"]["DateTimeOriginal"]
-    # time_str = "2016:07:22 10:04:28"
-    dt_obj = datetime.strptime(time_str, "%Y:%m:%d %H:%M:%S")
-    # print(dt_obj.year)
-    # from datetime import datetime
+#     # print(exif_json["Exif"]["DateTimeOriginal"])
+#     time_str = exif_json["Exif"]["DateTimeOriginal"]
+#     # time_str = "2016:07:22 10:04:28"
+#     dt_obj = datetime.strptime(time_str, "%Y:%m:%d %H:%M:%S")
+#     # print(dt_obj.year)
+#     # from datetime import datetime
 
-    # datetime_str = '09/19/18 13:55:26'
+#     # datetime_str = '09/19/18 13:55:26'
 
-    # datetime_object = datetime.strptime(datetime_str, '%m/%d/%y %H:%M:%S')
+#     # datetime_object = datetime.strptime(datetime_str, '%m/%d/%y %H:%M:%S')
 
-    # print(type(datetime_object))
-    # print(datetime_object)  # printed in default format
-    # date = datetime.for
-    # print(time_ddatetimedatetime_objectobjectate)
+#     # print(type(datetime_object))
+#     # print(datetime_object)  # printed in default format
+#     # date = datetime.for
+#     # print(time_ddatetimedatetime_objectobjectate)
