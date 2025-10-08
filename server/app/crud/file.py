@@ -4,34 +4,47 @@ from app.models.file import DFile, DirectoryClosure, MinioFile
 from sqlalchemy import select, insert, delete, and_
 from typing import List
 from app.services.file import FileCreate
+from sqlalchemy.exc import IntegrityError
 # 创建目录（在 files 表中 is_directory = True），并维护闭包表
 
 # 创建文件或目录
 async def create_file(db: AsyncSession, file_in: FileCreate, owner_id: str):
+    
+    q = select(DFile).where(DFile.owner_id == owner_id, DFile.parent_id == file_in.parent_id, DFile.name == file_in.name)
+    result = await db.execute(q)
+    existing = result.scalar_one_or_none()
+    # existing = result.scalars().first()
+    if existing:
+        return existing
+    
     file = DFile(**file_in.model_dump(), owner_id=owner_id)
     db.add(file)
-    await db.flush()  # 让 SQLAlchemy 获取 file.id
-    # print("111111111111111111111")
-    # print(file.id)
-    # 插入自己到 closure 表 (自反路径)
-    db.add(DirectoryClosure(ancestor_id=file.id, descendant_id=file.id, depth=0))
+    
+    try:
+        await db.flush()  # 让 SQLAlchemy 获取 file.id
+        
+        db.add(DirectoryClosure(ancestor_id=file.id, descendant_id=file.id, depth=0))
 
-    # 如果有 parent_id，则复制父节点的所有祖先路径 + 自己
-    if file_in.parent_id:
-        parent_paths = await db.execute(
-            select(DirectoryClosure).where(DirectoryClosure.descendant_id == file_in.parent_id)
-        )
-        for path in parent_paths.scalars().all():
-            db.add(DirectoryClosure(
-                ancestor_id=path.ancestor_id,
-                descendant_id=file.id,
-                depth=path.depth + 1
-            ))
+        # 如果有 parent_id，则复制父节点的所有祖先路径 + 自己
+        if file_in.parent_id:
+            parent_paths = await db.execute(
+                select(DirectoryClosure).where(DirectoryClosure.descendant_id == file_in.parent_id)
+            )
+            for path in parent_paths.scalars().all():
+                db.add(DirectoryClosure(
+                    ancestor_id=path.ancestor_id,
+                    descendant_id=file.id,
+                    depth=path.depth + 1
+                ))
+        await db.commit()
+        await db.refresh(file)
+        return file        
+    except IntegrityError:
+        db.rollback()
+        raise ValueError("文件或目录已存在")
+        return None
+    
 
-    await db.commit()
-    await db.refresh(file)
-    # print(file.id)
-    return file
 
 
 # 获取用户所有文件

@@ -26,27 +26,27 @@ async def upload_file(upload: UploadFile = File(...),
     return file
 
 
-@router.get("/", response_model=List[FileRead])
-async def list_user_files(
-    db: AsyncSession = Depends(get_db),
-    api_key: str = Security(api_key_header)
-):
-    uid = get_current_user(api_key)
-    service = FileService(db)
-    files = await service.get_user_files(uid)
-    return files
+# @router.get("/", response_model=List[FileRead])
+# async def list_user_files(
+#     db: AsyncSession = Depends(get_db),
+#     api_key: str = Security(api_key_header)
+# ):
+#     uid = get_current_user(api_key)
+#     service = FileService(db)
+#     files = await service.get_user_files(uid)
+#     return files
 
 
-@router.get("/{parent_id}/children", response_model=List[FileRead])
-async def list_children(
-        parent_id: int,
-    db: AsyncSession = Depends(get_db),
-    api_key: str = Security(api_key_header)
-):
-    uid = get_current_user(api_key)
-    service = FileService(db)
-    children = await service.get_children(parent_id)
-    return children
+# @router.get("/{parent_id}/children", response_model=List[FileRead])
+# async def list_children(
+#         parent_id: int,
+#     db: AsyncSession = Depends(get_db),
+#     api_key: str = Security(api_key_header)
+# ):
+#     uid = get_current_user(api_key)
+#     service = FileService(db)
+#     children = await service.get_children(parent_id)
+#     return children
 
 
 @router.delete("/{file_id}")
@@ -60,19 +60,19 @@ async def remove_file(
     await service.delete_file(file_id)
     return {"message": "File and its descendants deleted successfully"}
 
-@router.get("/{dir_id}/all", response_model=List[FileRead])
-async def list_all_files_in_dir(
-        dir_id: int,
-    db: AsyncSession = Depends(get_db),
-    api_key: str = Security(api_key_header)
-):
-    """
-    递归列出指定目录下的所有文件
-    """
-    uid = get_current_user(api_key)
-    service = FileService(db)
-    files = await service.get_all_descendants(dir_id)
-    return files
+# @router.get("/{dir_id}/all", response_model=List[FileRead])
+# async def list_all_files_in_dir(
+#         dir_id: int,
+#     db: AsyncSession = Depends(get_db),
+#     api_key: str = Security(api_key_header)
+# ):
+#     """
+#     递归列出指定目录下的所有文件
+#     """
+#     uid = get_current_user(api_key)
+#     service = FileService(db)
+#     files = await service.get_all_descendants(dir_id)
+#     return files
 
 @router.get("/tree", response_model=List[FileTree])
 async def get_directory_tree_api(

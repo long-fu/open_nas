@@ -1,4 +1,4 @@
-from sqlalchemy import Column, BigInteger, String, Text, ForeignKey, TIMESTAMP, Integer
+from sqlalchemy import Column, BigInteger, String, Text, ForeignKey, TIMESTAMP, Integer, UniqueConstraint
 from sqlalchemy.orm import relationship
 from app.database import Base
 from sqlalchemy.types import TypeDecorator, Integer
@@ -80,6 +80,10 @@ class DFile(Base):
         foreign_keys="[DirectoryClosure.ancestor_id]",
         back_populates="ancestor",
         cascade="all, delete"
+    )
+    
+    __table_args__ = (
+        UniqueConstraint('owner_id', 'parent_id', 'name', name='uq_user_parent_name'),
     )
 
 

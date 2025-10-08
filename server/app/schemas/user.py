@@ -17,7 +17,9 @@ class UserCreate(BaseModel):
     gender: str = "未知"
     birthdate: date | None = None
     status: str = "正常"
-
+    class Config:
+        orm_mode = True
+        
 class UserInfo(BaseModel):
     uid: str | None = None
     username: str
